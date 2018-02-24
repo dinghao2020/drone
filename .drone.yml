@@ -1,17 +1,15 @@
-workspace:
-  base: /srv/drone-demo
-  path: .
-
 pipeline:
   build:
-     image: golang:alpine
-     # pull: true
-     environment:
-       - KEY=VALUE
-     secrets: [key1, key2]
-     commands:
-       - echo $$KEY
-       - pwd
-       - ls
-       - CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o app .
-       - ./app
+    image: node:6.10.2-alpine
+    commands:
+      - yarn install
+      - yarn run build
+  publish:
+    image: plugins/docker
+    registry: harbor.dev.ifcert.cn
+    repo: harbor.dev.ifcert.cn/drone/realtopper-app
+    secrets: [ admin, Harbor12345 ]
+    insecure: true
+    tags:
+      - latest
+      - ${DRONE_COMMIT_SHA:0:8}
