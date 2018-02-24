@@ -1,15 +1,13 @@
 pipeline:
   build:
-    image: node:6.10.2-alpine
+    image: golang
     commands:
-      - yarn install
-      - yarn run build
-  publish:
-    image: plugins/docker
-    registry: harbor.dev.ifcert.cn
-    repo: harbor.dev.ifcert.cn/drone/realtopper-app
-    secrets: [ admin, Harbor12345 ]
-    insecure: true
-    tags:
-      - latest
-      - ${DRONE_COMMIT_SHA:0:8}
+      - go get
+      - go build
+      - go test
+
+services:
+  postgres:
+    image: postgres:9.4.5
+    environment:
+      - POSTGRES_USER=myapp
